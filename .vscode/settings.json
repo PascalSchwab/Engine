@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "opengl.h": "c",
+        "shader.h": "c"
+    }
+}

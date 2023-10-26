@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include "../glad/glad.h"
-#include <GLFW/glfw3.h>
+#include "main.h"
 
 const char* vertexShaderSource =
     "#version 330 core\n"
@@ -27,63 +24,33 @@ float vertices[] = {
 
 int main(){
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+    // Create Window
+    GLFWwindow* window = initWindow(800, 600, "Engine", false);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
-        printf("Failed to create GLFW window");
+    if(window == NULL){
         glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        printf("Failed to initialize GLAD");
-        return -1;
+        return ERROR;
     }
 
-    glViewport(0, 0, 800, 600);
+    // Create shader program
+    glId shaderProgram = initProgram(vertexShaderSource, fragmentShaderSource, NULL);
 
-    // Vertex Shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    // Fragment Shader
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    // Shader Program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    if(shaderProgram == 0){
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        return ERROR;
+    }
 
     // VAO && VBO
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    unsigned int VBO = initVBO(GL_ARRAY_BUFFER, vertices, sizeof(vertices), GL_STATIC_DRAW);
+    // Positions
+    addAttributeVBO(VBO, GL_ARRAY_BUFFER, 0, 3);
 
-    // Attributes
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     while(!glfwWindowShouldClose(window))
@@ -103,6 +70,9 @@ int main(){
         glfwPollEvents();
     }
 
+    glDeleteProgram(shaderProgram);
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
