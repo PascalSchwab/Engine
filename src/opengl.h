@@ -3,12 +3,22 @@ typedef const unsigned int glId;
 typedef struct{
     unsigned int id;
     unsigned int bufferType;
+    unsigned int drawType;
 }VBO;
 
-unsigned int initDynamicVBO(int bufferType, float data[], unsigned int dataSize);
+typedef struct{
+    unsigned int id;
+    VBO* vbos[3];
+}VAO;
 
-unsigned int initStaticVBO(int bufferTpye, float data[], unsigned int dataSize);
+VBO* initDynamicVBO(int bufferType, float data[], unsigned int dataSize);
 
-unsigned int initVBO(int bufferType, float data[], unsigned int dataSize, int drawType);
+VBO* initStaticVBO(int bufferTpye, float data[], unsigned int dataSize);
 
-void addAttributeVBO(unsigned int vbo, int bufferType, int index, int count);
+VBO* initVBO(int bufferType, float data[], unsigned int dataSize, int drawType);
+
+void addAttributeVBO(const VBO* vbo, int index, int count);
+
+VAO* initVAO(float vertices[], unsigned int verticeSize);
+
+void disposeVAO(const VAO* vao);

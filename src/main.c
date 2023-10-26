@@ -26,7 +26,7 @@ int main(){
     glfwInit();
     
     // Create Window
-    GLFWwindow* window = initWindow(800, 600, "Engine", false);
+    const GLFWwindow* window = initWindow(800, 600, "Engine", false);
 
     if(window == NULL){
         glfwTerminate();
@@ -42,16 +42,8 @@ int main(){
         return ERROR;
     }
 
-    // VAO && VBO
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    unsigned int VBO = initVBO(GL_ARRAY_BUFFER, vertices, sizeof(vertices), GL_STATIC_DRAW);
-    // Positions
-    addAttributeVBO(VBO, GL_ARRAY_BUFFER, 0, 3);
-
-    glBindVertexArray(0);
+    // VAO
+    const VAO* vao = initVAO(vertices, sizeof(vertices));
 
     while(!glfwWindowShouldClose(window))
     {
@@ -62,7 +54,7 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+        glBindVertexArray(vao->id);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
 
@@ -71,8 +63,7 @@ int main(){
     }
 
     glDeleteProgram(shaderProgram);
-    glDeleteBuffers(1, &VBO);
-    glDeleteVertexArrays(1, &VAO);
+    disposeVAO(vao);
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;

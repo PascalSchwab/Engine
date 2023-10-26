@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "opengl.h"
 #include "window.h"
