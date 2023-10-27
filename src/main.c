@@ -26,7 +26,7 @@ int main(){
     glfwInit();
     
     // Create Window
-    const GLFWwindow* window = initWindow(800, 600, "Engine", false);
+    Window* window = initWindow(800, 600, "Engine", false);
 
     if(window == NULL){
         glfwTerminate();
@@ -34,37 +34,37 @@ int main(){
     }
 
     // Create shader program
-    glId shaderProgram = initProgram(vertexShaderSource, fragmentShaderSource, NULL);
+    ShaderProgram* shaderProgram = initProgram(vertexShaderSource, fragmentShaderSource, NULL);
 
-    if(shaderProgram == 0){
-        glfwDestroyWindow(window);
+    if(shaderProgram == NULL){
+        disposeWindow(window);
         glfwTerminate();
         return ERROR;
     }
 
     // VAO
-    const VAO* vao = initVAO(vertices, sizeof(vertices));
+    VAO* vao = initVAO(vertices, sizeof(vertices));
 
-    while(!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window->window))
     {
-        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, true);
+        if(glfwGetKey(window->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window->window, true);
 
         glClearColor(0.5f, 0.2f, 0.7f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        glUseProgram(shaderProgram->id);
         glBindVertexArray(vao->id);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window->window);
         glfwPollEvents();
     }
 
-    glDeleteProgram(shaderProgram);
+    disposeProgram(shaderProgram);
     disposeVAO(vao);
-    glfwDestroyWindow(window);
+    disposeWindow(window);
     glfwTerminate();
     return 0;
 }

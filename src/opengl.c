@@ -47,8 +47,14 @@ VAO* initVAO(float vertices[], unsigned int verticeSize){
     return vao;
 }
 
-void disposeVAO(const VAO* vao){
-    glDeleteBuffers(1, &vao->vbos[0]->id);   // In work
+void disposeVBO(VBO* vbo){
+    glDeleteBuffers(1, &vbo->id);
+    free(vbo);
+}
+
+void disposeVAO(VAO* vao){
+    disposeVBO(vao->vbos[0]);
 
     glDeleteVertexArrays(1, &vao->id);
+    free(vao);
 }

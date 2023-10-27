@@ -1,45 +1,59 @@
 #include "shader.h"
 
-glId initShader(const int shaderType, const char* source){
-    glId shader = glCreateShader(shaderType);
-    glShaderSource(shader, 1, &source, NULL);
-    glCompileShader(shader);
+Shader* initShader(int shaderType, const char* source){
+    Shader* shader = malloc(sizeof(Shader));
+    shader->shaderType = shaderType;
+    shader->id = glCreateShader(shaderType);
+    glShaderSource(shader->id, 1, &source, NULL);
+    glCompileShader(shader->id);
     return shader;
 }
 
-glId initProgram(const char* vertexSource, const char* fragmentSource, const char* geometrySource){
-        // Vertex and Fragment shader are required
+ShaderProgram* initProgram(const char* vertexSource, const char* fragmentSource, const char* geometrySource){
+    ShaderProgram* program = malloc(sizeof(ShaderProgram));
+
+    // Vertex and Fragment shader are required
     if(vertexSource == NULL){
         printf("Vertex Shader is not defined");
-        return ERROR;
+        return NULL;
     }
     if(fragmentSource == NULL){
         printf("Fragment Shader is not defined");
-        return ERROR;
+        return NULL;
     }
     
-    glId program = glCreateProgram();
+    program->id = glCreateProgram();
 
     // Init shaders
-    glId vertexShader = initShader(GL_VERTEX_SHADER, vertexSource);
-    glAttachShader(program, vertexShader);
-    glId fragmentShader = initShader(GL_FRAGMENT_SHADER, fragmentSource);
-    glAttachShader(program, fragmentShader);
-    unsigned int geometryShader;
+    Shader* vertexShader = initShader(GL_VERTEX_SHADER, vertexSource);
+    glAttachShader(program->id, vertexShader->id);
+    Shader* fragmentShader = initShader(GL_FRAGMENT_SHADER, fragmentSource);
+    glAttachShader(program->id, fragmentShader->id);
+    Shader* geometryShader = NULL;
     if(geometrySource != NULL){
         geometryShader = initShader(GL_GEOMETRY_SHADER, geometrySource);
-        glAttachShader(program, geometryShader);
+        glAttachShader(program->id, geometryShader->id);
     }
 
     // Link shaders
-    glLinkProgram(program);
+    glLinkProgram(program->id);
 
     // Delete shaders
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    disposeShader(vertexShader);
+    disposeShader(fragmentShader);
     if(geometrySource != NULL){
-        glDeleteShader(geometryShader);
+        disposeShader(geometryShader);
     }
 
     return program;
+}
+
+void disposeShader(Shader* shader){
+    glDeleteShader(shader->id);
+    free(shader);
+}
+
+void disposeProgram(ShaderProgram* program){
+    glDeleteProgram(program->id);
+    free(program);
 }

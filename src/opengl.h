@@ -1,5 +1,3 @@
-typedef const unsigned int glId;
-
 typedef struct{
     unsigned int id;
     unsigned int bufferType;
@@ -21,4 +19,6 @@ void addAttributeVBO(const VBO* vbo, int index, int count);
 
 VAO* initVAO(float vertices[], unsigned int verticeSize);
 
-void disposeVAO(const VAO* vao);
+void disposeVBO(VBO* vbo);
+
+void disposeVAO(VAO* vao);

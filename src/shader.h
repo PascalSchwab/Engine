@@ -3,10 +3,21 @@
 
 #include "main.h"
 
-glId initShader(const int shaderType, const char* source);
+typedef struct{
+    unsigned int id;
+    unsigned int shaderType;
+} Shader;
 
-glId initProgram(const char* vertexSource, const char* fragmentSource, const char* geometrySource);
+typedef struct{
+    unsigned int id;
+} ShaderProgram;
 
-void disposeProgram();
+Shader* initShader(int shaderType, const char* source);
+
+ShaderProgram* initProgram(const char* vertexSource, const char* fragmentSource, const char* geometrySource);
+
+void disposeShader(Shader* shader);
+
+void disposeProgram(ShaderProgram* program);
 
 #endif

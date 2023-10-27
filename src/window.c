@@ -1,6 +1,13 @@
 #include "window.h"
 
-GLFWwindow* initWindow(const int width, const int height, const char* title, const int resizable){
+Window* initWindow(int width, int height, char* title, int resizable){
+    // Init Window
+    Window* window = malloc(sizeof(Window));
+    window->width = width;
+    window->height = height;
+    window->title = title;
+    window->resizable = resizable;
+
     // Set Window Options
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -9,16 +16,15 @@ GLFWwindow* initWindow(const int width, const int height, const char* title, con
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     }
 
-    // Check window creation
-    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
-
-    if (window == NULL)
+    // Check gl_window creation
+    GLFWwindow* glfwWindow = glfwCreateWindow(width, height, title, NULL, NULL);
+    if (glfwWindow == NULL)
     {
         printf("Failed to create GLFW window");
         return NULL;
     }
-
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(glfwWindow);
+    window->window = glfwWindow;
 
     // Check working glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -31,3 +37,7 @@ GLFWwindow* initWindow(const int width, const int height, const char* title, con
     return window;
 }
 
+void disposeWindow(Window* window){
+    glfwDestroyWindow(window->window);
+    free(window);
+}

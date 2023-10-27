@@ -3,6 +3,16 @@
 
 #include "main.h"
 
-GLFWwindow* initWindow(const int width, const int height, const char* title, const int resizable);
+typedef struct{
+    unsigned int width;
+    unsigned int height;
+    char* title;
+    unsigned int resizable;
+    GLFWwindow* window;
+} Window;
+
+Window* initWindow(int width, int height, char* title, int resizable);
+
+void disposeWindow(Window* window);
 
 #endif
