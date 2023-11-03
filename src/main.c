@@ -1,70 +1,89 @@
 #include "main.h"
 
-const char* vertexShaderSource =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-
-const char* fragmentShaderSource =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0";
-
 float vertices[] = {
+     0.5f,  0.5f, 0.0f, 
+     0.5f, -0.5f, 0.0f, 
     -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
+    -0.5f,  0.5f, 0.0f
 };
+
+unsigned int indices[] = {
+    0, 1, 3,
+    1, 2, 3
+}; 
+
+Window* window;
+
+ShaderProgram* program;
+
+Mesh* mesh;
 
 int main(){
     glfwInit();
-    
+
+    int status = startEngine();
+
+    glfwTerminate();
+
+    return status;
+}
+
+static int startEngine(){
     // Create Window
-    Window* window = initWindow(800, 600, "Engine", false);
+    window = initWindow(800, 600, "Engine", false);
 
     if(window == NULL){
-        glfwTerminate();
         return ERROR;
     }
 
     // Create shader program
-    ShaderProgram* shaderProgram = initProgram(vertexShaderSource, fragmentShaderSource, NULL);
+    program = initProgram("../assets/main.vert", "../assets/main.frag", NULL);
 
-    if(shaderProgram == NULL){
+    if(program == NULL){
         disposeWindow(window);
-        glfwTerminate();
         return ERROR;
     }
 
     // VAO
-    VAO* vao = initVAO(vertices, sizeof(vertices));
+    mesh = initMesh(vertices, sizeof(vertices), indices, sizeof(indices));
 
-    while(!glfwWindowShouldClose(window->window))
-    {
-        if(glfwGetKey(window->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window->window, true);
+    // Set color
+    glClearColor(0.5f, 0.2f, 0.7f, 1.0f);
 
-        glClearColor(0.5f, 0.2f, 0.7f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+    // While loop
+    loop();
 
-        glUseProgram(shaderProgram->id);
-        glBindVertexArray(vao->id);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0);
+    dispose();
+    return SUCCESS;
+}
+
+static void loop(){
+    while(!glfwWindowShouldClose(window->window)){
+        update();
+
+        render();
 
         glfwSwapBuffers(window->window);
-        glfwPollEvents();
+        glfwPollEvents(); 
     }
+}
 
-    disposeProgram(shaderProgram);
-    disposeVAO(vao);
+static void update(){
+    if(glfwGetKey(window->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window->window, true);
+}
+
+static void render(){
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(program->id);
+    glBindVertexArray(mesh->vao->id);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+static void dispose(){
+    disposeProgram(program);
+    disposeMesh(mesh);
     disposeWindow(window);
-    glfwTerminate();
-    return 0;
 }

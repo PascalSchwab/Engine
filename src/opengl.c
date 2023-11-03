@@ -6,55 +6,50 @@
 
 #include "opengl.h"
 
-VBO* initDynamicVBO(int bufferType, float data[], unsigned int dataSize){
-    return initVBO(bufferType, data, dataSize, GL_STATIC_DRAW);
-}
-
-VBO* initStaticVBO(int bufferType, float data[], unsigned int dataSize){
-    return initVBO(bufferType, data, dataSize, GL_STATIC_DRAW);
-}
-
-VBO* initVBO(int bufferType, float data[], unsigned int dataSize, int drawType){
-    VBO* vbo = malloc(sizeof(VBO));
-    vbo->id = 0;
-    vbo->bufferType = bufferType;
-    vbo->drawType = drawType;
-    glGenBuffers(1, &vbo->id);
-    glBindBuffer(bufferType, vbo->id);
+GLBuffer* initIntGLBuffer(int bufferType, unsigned int data[], unsigned int dataSize, int drawType){
+    GLBuffer* glBuffer = malloc(sizeof(GLBuffer));
+    glBuffer->id = 0;
+    glBuffer->bufferType = bufferType;
+    glBuffer->drawType = drawType;
+    glGenBuffers(1, &glBuffer->id);
+    glBindBuffer(bufferType, glBuffer->id);
     glBufferData(bufferType, dataSize, data, drawType);
     glBindBuffer(bufferType, 0);
-    return vbo;
+    return glBuffer;
 }
 
-void addAttributeVBO(const VBO* vbo, int index, int count){
-    glBindBuffer(vbo->bufferType, vbo->id);
+GLBuffer* initFloatGLBuffer(int bufferType, float data[], unsigned int dataSize, int drawType){
+    GLBuffer* glBuffer = malloc(sizeof(GLBuffer));
+    glBuffer->id = 0;
+    glBuffer->bufferType = bufferType;
+    glBuffer->drawType = drawType;
+    glGenBuffers(1, &glBuffer->id);
+    glBindBuffer(bufferType, glBuffer->id);
+    glBufferData(bufferType, dataSize, data, drawType);
+    glBindBuffer(bufferType, 0);
+    return glBuffer;
+}
+
+void addAttributeGLBuffer(const GLBuffer* glBuffer, int index, int count){
+    glBindBuffer(glBuffer->bufferType, glBuffer->id);
     glVertexAttribPointer(index, count, GL_FLOAT, GL_FALSE, count * sizeof(float), (void*)0);
     glEnableVertexAttribArray(index);
-    glBindBuffer(vbo->bufferType, 0);
+    glBindBuffer(glBuffer->bufferType, 0);
 }
 
-VAO* initVAO(float vertices[], unsigned int verticeSize){
+VAO* initVAO(){
     VAO* vao = malloc(sizeof(VAO));
     vao->id = 0;
     glGenVertexArrays(1, &vao->id);
-    glBindVertexArray(vao->id);
-
-    // Vertices
-    vao->vbos[0] = initVBO(GL_ARRAY_BUFFER, vertices, verticeSize, GL_STATIC_DRAW);
-    addAttributeVBO(vao->vbos[0], 0, 3);
-
-    glBindVertexArray(0);
     return vao;
 }
 
-void disposeVBO(VBO* vbo){
-    glDeleteBuffers(1, &vbo->id);
-    free(vbo);
+void disposeGLBuffer(GLBuffer* glBuffer){
+    glDeleteBuffers(1, &glBuffer->id);
+    free(glBuffer);
 }
 
 void disposeVAO(VAO* vao){
-    disposeVBO(vao->vbos[0]);
-
     glDeleteVertexArrays(1, &vao->id);
     free(vao);
 }

@@ -9,9 +9,21 @@
 
 #include "opengl.h"
 #include "window.h"
+#include "iomanager.h"
 #include "shader.h"
+#include "mesh.h"
 
 #define SUCCESS 0
 #define ERROR 1
+
+static int startEngine();
+
+static void update();
+
+static void render();
+
+static void loop();
+
+static void dispose();
 
 #endif

@@ -10,11 +10,14 @@ typedef struct{
 
 typedef struct{
     unsigned int id;
+    File* vertexShaderFile;
+    File* fragmentShaderFile;
+    File* geometryShaderFile;
 } ShaderProgram;
 
 Shader* initShader(int shaderType, const char* source);
 
-ShaderProgram* initProgram(const char* vertexSource, const char* fragmentSource, const char* geometrySource);
+ShaderProgram* initProgram(char* vertexShaderPath, char* fragmentShaderPath, char* geometryShaderPath);
 
 void disposeShader(Shader* shader);
 
