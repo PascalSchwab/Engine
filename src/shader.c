@@ -1,5 +1,21 @@
 #include "shader.h"
 
+const char* vertexShaderSource =
+    "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+
+const char* fragmentShaderSource =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\0";
+
 Shader* initShader(int shaderType, const char* source){
     Shader* shader = malloc(sizeof(Shader));
     shader->shaderType = shaderType;
@@ -47,9 +63,9 @@ ShaderProgram* initProgram(char* vertexShaderPath, char* fragmentShaderPath, cha
     }
 
     // Init shaders
-    Shader* vertexShader = initShader(GL_VERTEX_SHADER, program->vertexShaderFile->text);
+    Shader* vertexShader = initShader(GL_VERTEX_SHADER, vertexShaderSource);        // Error
     glAttachShader(program->id, vertexShader->id);
-    Shader* fragmentShader = initShader(GL_FRAGMENT_SHADER, program->fragmentShaderFile->text);
+    Shader* fragmentShader = initShader(GL_FRAGMENT_SHADER, fragmentShaderSource);  // Error
     glAttachShader(program->id, fragmentShader->id);
     Shader* geometryShader = NULL;
     if(geometryShaderPath != NULL){

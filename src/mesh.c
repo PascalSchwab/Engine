@@ -30,7 +30,7 @@ Mesh* initMesh(float vertices[], unsigned int verticeSize, unsigned int indices[
 
 void disposeMesh(Mesh* mesh){
     disposeVAO(mesh->vao);
-    for(int i = 0; i < sizeof(mesh->glBuffers) / sizeof(GLBuffer*); i++){
+    for(int i = 0; i < sizeof(mesh->glBuffers) / sizeof(GLBuffer*) - 1; i++){       // Error
         disposeGLBuffer(mesh->glBuffers[i]);
     }
     free(mesh);
